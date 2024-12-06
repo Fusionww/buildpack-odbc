@@ -1,21 +1,24 @@
-#!/bin/sh
-
+#!/usr/bin/env bash
 
 arrow() {
   echo '----->' "$@"
 }
 
-indent() {
-  sed -u 's/^/       /'
-}
-
 arrow "Starting adding ODBC Driver 18 for SQL Server"
+
 BUILD_DIR=$1
-mkdir -p "${BUILD_DIR}/.apt/usr/lib/odbc/conf/" | indent
-mkdir -p "${BUILD_DIR}/.apt/usr/share/resources/en_US/" | indent
-cp libmsodbcsql-18.4.so.1.1 "${BUILD_DIR}/.apt/usr/lib/libmsodbcsql-18.4.so.1.1" | indent
+
+# Create directories
+mkdir -p "${BUILD_DIR}/.apt/usr/lib/odbc/conf"
+mkdir -p "${BUILD_DIR}/.apt/usr/share/resources/en_US"
+
+# Copy the ODBC driver library
+cp libmsodbcsql-18.4.so.1.1 "${BUILD_DIR}/.apt/usr/lib/libmsodbcsql-18.4.so.1.1"
 arrow "copied libmsodbcsql-18.4.so.1.1"
-cp odbcinst.ini "${BUILD_DIR}/.apt/usr/lib/odbc/conf/odbcinst.ini" | indent
+
+# Copy odbcinst.ini
+cp odbcinst.ini "${BUILD_DIR}/.apt/usr/lib/odbc/conf/odbcinst.ini"
 arrow "copied odbcinst.ini"
 
-arrow "Finished adding ODBC Driver 17 for SQL Server"
+arrow "Finished adding ODBC Driver 18 for SQL Server"
+exit 0
