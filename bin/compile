@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+# Print useful info
+echo "Running custom ODBC buildpack compile step..."
+
+# Install prerequisites (you may need to include the commands to add Microsoft’s GPG keys and repos)
+curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+echo "deb [arch=amd64] https://packages.microsoft.com/ubuntu/24.04/prod focal main" > /etc/apt/sources.list.d/mssql-release.list
+
+apt-get update
+
+# Accept the EULA and install ODBC driver 18
+ACCEPT_EULA=Y apt-get install -y --no-install-recommends msodbcsql18
+
+# Cleanup
+rm -rf /var/lib/apt/lists/*
+
+echo "ODBC driver installation complete."
+exit 0
+

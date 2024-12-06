@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# Simple example: Always detect
+echo "Custom ODBC Buildpack"
+exit 0
+
