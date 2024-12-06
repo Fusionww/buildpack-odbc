@@ -1,23 +1,21 @@
-#!/usr/bin/env bash
+#!/bin/sh
+
+
+arrow() {
+  echo '----->' "$@"
+}
+
+indent() {
+  sed -u 's/^/       /'
+}
+
+arrow "Starting adding ODBC Driver 18 for SQL Server"
 BUILD_DIR=$1
-CACHE_DIR=$2
-ENV_DIR=$3
+mkdir -p "${BUILD_DIR}/.apt/usr/lib/odbc/conf/" | indent
+mkdir -p "${BUILD_DIR}/.apt/usr/share/resources/en_US/" | indent
+cp libmsodbcsql-18.4.so.1.1 "${BUILD_DIR}/.apt/usr/lib/libmsodbcsql-18.4.so.1.1" | indent
+arrow "copied libmsodbcsql-18.4.so.1.1"
+cp odbcinst.ini "${BUILD_DIR}/.apt/usr/lib/odbc/conf/odbcinst.ini" | indent
+arrow "copied odbcinst.ini"
 
-# Print useful info
-echo "Running custom ODBC buildpack compile step..."
-
-# Install prerequisites (you may need to include the commands to add Microsoft’s GPG keys and repos)
-curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
-echo "deb [arch=amd64] https://packages.microsoft.com/ubuntu/24.04/prod focal main" > /etc/apt/sources.list.d/mssql-release.list
-
-apt-get update
-
-# Accept the EULA and install ODBC driver 18
-ACCEPT_EULA=Y apt-get install -y --no-install-recommends msodbcsql18
-
-# Cleanup
-rm -rf /var/lib/apt/lists/*
-
-echo "ODBC driver installation complete."
-exit 0
-
+arrow "Finished adding ODBC Driver 17 for SQL Server"
