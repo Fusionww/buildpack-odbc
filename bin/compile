@@ -4,21 +4,26 @@ arrow() {
   echo '----->' "$@"
 }
 
-arrow "Starting adding ODBC Driver 18 for SQL Server"
+arrow "Starting custom buildpack for ODBC Driver 18"
 
-BUILD_DIR="$1/opt/microsoft/msodbcsql18/"
+BUILD_DIR=$1
 
-# Create directories
-mkdir -p "${BUILD_DIR}/lib64"
-mkdir -p "${BUILD_DIR}/etc"
+# Add Microsoft's package repository
+arrow "Adding Microsoft repository"
+curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > $BUILD_DIR/microsoft.gpg
+mkdir -p /etc/apt/keyrings
+cp $BUILD_DIR/microsoft.gpg /etc/apt/keyrings/microsoft-prod.gpg
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/ubuntu/24.04/prod focal main" > /etc/apt/sources.list.d/microsoft-prod.list
 
-# Copy the ODBC driver library
-cp libmsodbcsql-18.4.so.1.1 "${BUILD_DIR}/lib64/libmsodbcsql-18.4.so.1.1"
-arrow "copied libmsodbcsql-18.4.so.1.1"
+# Update apt cache and install msodbcsql18
+arrow "Updating apt-get and installing msodbcsql18"
+apt-get update
+ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
 
-# Copy odbcinst.ini
-cp odbcinst.ini "${BUILD_DIR}/etc/odbcinst.ini"
-arrow "copied odbcinst.ini"
+# Ensure the driver files are available in the build directory
+arrow "Copying ODBC driver files to the build directory"
+mkdir -p $BUILD_DIR/.apt/usr/lib
+cp -r /opt/microsoft/msodbcsql18/* $BUILD_DIR/.apt/usr/lib/
 
-arrow "Finished adding ODBC Driver 18 for SQL Server"
+arrow "Finished setting up ODBC Driver 18"
 exit 0
